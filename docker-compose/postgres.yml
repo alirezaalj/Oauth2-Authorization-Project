@@ -1,0 +1,27 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:${POSTGRES_VERSION:-14.1-alpine}
+    user: postgres
+    restart: always
+    hostname: postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - ${POSTGRES_PORT}:5432
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASS}
+      - POSTGRES_DB=oauth_server_db
+    volumes:
+#      - ./datasource/data:/var/lib/postgresql/data #permision problem
+      - ./datasource/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - ${GLOBAL_NETWORK:-postgres}
+volumes:
+  postgres:
+    driver: local

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title th:text="${@environment.getProperty('application.info.name')}">Authorization Application</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <!-- Favicons -->
+    <link href="/static/assets/img/favicon.png" th:href="@{/assets/img/favicon.png}" rel="icon">
+    <link href="/static/assets/img/apple-touch-icon.png" th:href="@{/assets/img/apple-touch-icon.png}"
+          rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+          rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="/static/assets/vendor/bootstrap/css/bootstrap.min.css"
+          th:href="@{/assets/vendor/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="/static/assets/css/style.css" th:href="@{/assets/css/style.css}" rel="stylesheet">
+    <link href="/static/assets/css/custom.css" th:href="@{/assets/css/custom.css}" rel="stylesheet">
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+</head>
+
+<body>
+
+<main>
+    <div class="container">
+
+        <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+
+                        <div class="d-flex justify-content-center py-4">
+                            <a href="#" class="logo d-flex align-items-center w-auto">
+                                <img src="/static/assets/img/logo.png" th:src="@{/assets/img/logo.png}" alt="">
+                                <span class="d-none d-lg-block"
+                                      th:text="${@environment.getProperty('application.info.name')}">Authorization Application</span>
+                            </a>
+                        </div><!-- End Logo -->
+
+                        <div class="card mb-3">
+
+                            <div class="card-body">
+
+                                <div class="pt-4 pb-2">
+                                    <h5 class="card-title text-center pb-0 fs-4">Forget My Username</h5>
+                                    <p class="text-center small">Enter the email address you registered with</p>
+                                </div>
+                                <div th:if="${param.error}" style="height: 44px"
+                                     class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <p th:text="${param.error}">Message</p>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div th:if="${error}" style="height: 44px"
+                                     class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <p th:text="${error}">Message</p>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                            aria-label="Close"></button>
+                                </div>
+                                <form th:action="@{/forget/username}" th:object="${forget_request}"
+                                      method="post"
+                                      class="row g-3">
+                                    <div class="col-12">
+                                        <label for="email" class="form-label input-error"
+                                               th:if="${#fields.hasErrors('email')}"
+                                               th:errors="*{email}">Username </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">✉</span>
+                                            <input type="text" th:field="*{email}" name="username" class="form-control"
+                                                   id="email" placeholder="Email" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-12" th:if="${@environment.getProperty('google.recaptcha.enable')}">
+                                        <div class="g-recaptcha col-sm-5"
+                                             th:attr="data-sitekey=${@captchaService.getReCaptchaSite()}"
+                                             data-callback="onReCaptchaSuccess"
+                                             data-expired-callback="onReCaptchaExpired"></div>
+                                        <span id="captchaError" class="alert alert-danger col-sm-4"
+                                              style="display:none"></span>
+                                    </div>
+                                    <span id="resendLink" th:if="${resend}">02:00</span>
+                                    <div class="col-12">
+                                        <button class="btn btn-primary w-100" id="resendBtn" onclick="return canResend;"
+                                                type="submit">Send Email
+                                        </button>
+                                    </div>
+                                    <div class="col-12">
+                                        <p class="small mb-0">Already have an account? <a
+                                                href="../register/register.html"
+                                                th:href="@{/auth/login}">Log in</a></p>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+
+                        <div class="credits">
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </div>
+</main><!-- End #main -->
+
+<!-- Vendor JS Files -->
+<script src="/static/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"
+        th:src="@{/assets/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+<!-- Template Main JS File -->
+<script src="/static/assets/js/main.js" th:src="@{/assets/js/main.js}"></script>
+
+</body>
+<script th:if="${resend}">
+    var canResend = false;
+    document.getElementById("resendBtn").style = 'background-color: #acacac;';
+
+    function startTimer(duration, display) {
+        console.log('in timer')
+        var timer = duration, minutes, seconds;
+        var interval = setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.textContent = minutes + ":" + seconds;
+
+            if (--timer < 0) {
+                timer = duration;
+            }
+            if (minutes == 0o0 & seconds == 0o0) {
+                canResend = true;
+                document.getElementById("resendBtn").style = "";
+                display.textContent = "";
+                clearInterval(interval);
+            }
+        }, 1000);
+
+    }
+
+    window.onload = function () {
+        var fiveMinutes = 60 * 2, display = document.querySelector('#resendLink');
+        startTimer(fiveMinutes, display);
+    };
+</script>
+</html>

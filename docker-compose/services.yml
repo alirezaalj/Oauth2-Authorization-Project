@@ -1,0 +1,33 @@
+version: '3.9'
+
+services:
+  auth-service:
+    image: ${GROUP_ID}/authorization-server:${SERVICE_VERSION:-latest}
+    ports:
+      - "9000:9000"
+    depends_on:
+      redis:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    volumes:
+      - "./OAuthApplication/oauth-server/logs:/application/logs"
+      - "../conf/keys:/application/conf/keys"
+    environment:
+      JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Xms128m -Xmx256m
+      server.port: 9000
+      # jasypt config
+      jasypt.encryptor.password: ${JASYPT_ENCRYPTOR_PASSWORD}
+      # config server
+      encrypt.key: ${SPRING_ENCRYPT_KEY}
+      spring.cloud.config.uri: http://localhost:8888
+      spring.cloud.config.profile: base,application,app,postgres,mail-me,ssl
+      spring.cloud.config.username: spring_config_user
+      spring.cloud.config.password: '{cipher}117a3f626361ebef83d1a1f14315b64cf1afc41c5a81f238c31cbaae5cbbd11d99ecb66a8d01471b43a6e4679f2429d9'
+      spring.cloud.config.label: master
+      # application
+      application.security.key-dir: "/application/conf/keys"
+    networks:
+      - ${GLOBAL_NETWORK:-services}

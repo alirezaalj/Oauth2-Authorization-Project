@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>Authorization Application</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <!-- Favicons -->
+    <link href="/static/assets/img/favicon.png" th:href="@{/assets/img/favicon.png}" rel="icon">
+    <link href="/static/assets/img/apple-touch-icon.png" th:href="@{/assets/img/apple-touch-icon.png}"
+          rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+          rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="/static/assets/vendor/bootstrap/css/bootstrap.min.css"
+          th:href="@{/assets/vendor/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="/static/assets/css/style.css" th:href="@{/assets/css/style.css}" rel="stylesheet">
+    <link href="/static/assets/css/custom.css" th:href="@{/assets/css/custom.css}" rel="stylesheet">
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+</head>
+
+<body>
+
+<main>
+    <div class="container">
+
+        <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+
+                        <div class="d-flex justify-content-center py-4">
+                            <a href="#" class="logo d-flex align-items-center w-auto">
+                                <img src="/static/assets/img/logo.png" th:src="@{/assets/img/logo.png}" alt="">
+                                <span class="d-none d-lg-block">Authorization Application</span>
+                            </a>
+                        </div><!-- End Logo -->
+
+                        <div class="card mb-3">
+
+                            <div class="card-body">
+
+                                <div class="pt-4 pb-2">
+                                    <h5 class="card-title text-center pb-0 fs-4">Create an Account</h5>
+                                    <p class="text-center small">Enter your personal details to create account</p>
+                                </div>
+                                <div th:if="${param.error}" style="height: 44px"
+                                     class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <p th:text="${param.error}">Message</p>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div th:if="${error}" style="height: 44px"
+                                     class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <p th:text="${error}">Message</p>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                            aria-label="Close"></button>
+                                </div>
+                                <form th:action="@{/register/sign-up}" th:object="${sign_up_request}" method="post"
+                                      class="row g-3">
+
+                                    <div class="col-12">
+                                        <label for="username" class="form-label input-error"
+                                               th:if="${#fields.hasErrors('username')}"
+                                               th:errors="*{username}">Username </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">@</span>
+                                            <input type="text" th:field="*{username}" name="username"
+                                                   class="form-control" id="username" placeholder="Username" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="email" class="form-label input-error"
+                                               th:if="${#fields.hasErrors('email')}"
+                                               th:errors="*{email}">Username </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">✉</span>
+                                            <input type="text" th:field="*{email}" name="username" class="form-control"
+                                                   id="email" placeholder="Email" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="password" class="form-label input-error"
+                                               th:if="${#fields.hasErrors('password')}"
+                                               th:errors="*{password}">Password</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">🔑</span>
+                                            <input type="password" th:field="*{password}" name="password"
+                                                   class="form-control" id="password" placeholder="Password" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="rePassword" class="form-label input-error"
+                                               th:if="${#fields.hasErrors('rePassword')}" th:errors="*{rePassword}">Password</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">🔑</span>
+                                            <input type="password" th:field="*{rePassword}" name="rePassword"
+                                                   class="form-control" id="rePassword" placeholder="Reply Password"
+                                                   required>
+                                        </div>
+                                    </div>
+                                    <div class="col-12" th:if="${@environment.getProperty('google.recaptcha.enable')}">
+                                        <div class="g-recaptcha col-sm-5"
+                                             th:attr="data-sitekey=${@captchaService.getReCaptchaSite()}"
+                                             data-callback="onReCaptchaSuccess"
+                                             data-expired-callback="onReCaptchaExpired"></div>
+                                        <span id="captchaError" class="alert alert-danger col-sm-4"
+                                              style="display:none"></span>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input" name="agreement" type="checkbox" value=""
+                                                   th:field="*{agreement}"
+                                                   id="agreement" required>
+                                            <label class="form-check-label" for="agreement">I agree and accept the
+                                                <a href="#">terms and conditions</a></label>
+                                            <div class="invalid-feedback">You must agree before submitting.</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <button class="btn btn-primary w-100" type="submit">Create Account</button>
+                                    </div>
+                                    <div class="col-12">
+                                        <p class="small mb-0">Already have an account? <a
+                                                href="../login/login.html"
+                                                th:href="@{/auth/login}">Log in</a></p>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+
+                        <div class="credits">
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </div>
+</main><!-- End #main -->
+
+<!-- Vendor JS Files -->
+<script src="/static/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"
+        th:src="@{/assets/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+<!-- Template Main JS File -->
+<script src="/static/assets/js/main.js" th:src="@{/assets/js/main.js}"></script>
+
+</body>
+
+</html>

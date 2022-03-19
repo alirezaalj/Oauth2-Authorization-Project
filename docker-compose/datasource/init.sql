@@ -1,0 +1,3 @@
+CREATE ROLE postgres WITH
+    LOGIN
+    CONNECTION LIMIT -1

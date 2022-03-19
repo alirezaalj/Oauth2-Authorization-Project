@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: oauth-server
+  cloud:
+    config:
+      uri: http://localhost:8888
+      name: oauth
+      profile: base,application,app,postgres,mail-me,ssl,logfile
+      username: spring_config_user
+      password: '{cipher}117a3f626361ebef83d1a1f14315b64cf1afc41c5a81f238c31cbaae5cbbd11d99ecb66a8d01471b43a6e4679f2429d9'
+      label: master
+
+encrypt:
+  key: password
+
+jasypt:
+  encryptor:
+    password: myPassword

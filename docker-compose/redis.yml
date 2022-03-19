@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  redis:
+    image: redis
+    restart: always
+    hostname: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - cache:/data
+    networks:
+      - ${GLOBAL_NETWORK:-services}
+
+volumes:
+  redis:
+    driver: local

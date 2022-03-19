@@ -1,0 +1,24 @@
+version: '3.9'
+
+services:
+  config-server:
+    image: ${GROUP_ID}/config-server:${CONFIG_SERVER_VERSION:-latest}
+    healthcheck:
+      test: [ "CMD", "curl --fail --silent localhost:8888/actuator/health | grep UP || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "8888:8888"
+    volumes:
+      - "./OAuthApplication/config-server/logs:/application/logs/"
+      - "../conf/config-repository/:/application/config-repository"
+    env_file:
+      - config-dev.env
+    environment:
+      spring.profiles.active: logfile
+      spring.security.user.name: ${CONFIG_SERVER_USER}
+      spring.security.user.password: ${CONFIG_SERVER_PASSWORD}
+      spring.cloud.config.server.git.uri: /application/config-repository
+      encrypt.key: ${SPRING_ENCRYPT_KEY}
+      server.port: 8888

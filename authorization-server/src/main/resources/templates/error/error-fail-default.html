@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,400i,700,900&display=swap" rel="stylesheet">
+    <link th:href="@{/assets/css/error-default.css}" href="#" rel="stylesheet">
+    <link href="/static/assets/css/error-default.css" rel="stylesheet">
+    <title th:if="title" th:text="${title}">Title</title>
+</head>
+<body>
+<div class="card">
+    <div style="border-radius:200px; height:200px; width:200px; background: #F8FAF5; margin:0 auto;">
+        <i>&#10006;</i>
+    </div>
+    <h1 th:if="title" th:text="${title}">Title</h1>
+    <p th:if="message" th:text="${message}">Message </p>
+    <div class="btn">
+        <a  href="/">Home</a>
+        <a  href="#" th:if="action" th:href="${action}">Try Again</a>
+    </div>
+
+</div>
+</body>
+</html>

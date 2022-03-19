@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Contact us</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="/static/assets/img/favicon.png" th:href="@{/assets/img/favicon.png}" rel="icon">
+  <link href="/static/assets/img/apple-touch-icon.png" th:href="@{/assets/img/apple-touch-icon.png}" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="/static/assets/vendor/bootstrap/css/bootstrap.min.css" th:href="@{/assets/vendor/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+  <link href="/static/assets/vendor/bootstrap-icons/bootstrap-icons.css" th:href="@{/assets/vendor/bootstrap-icons/bootstrap-icons.css}" rel="stylesheet">
+  <link href="/static/assets/vendor/boxicons/css/boxicons.css" th:href="@{/assets/vendor/boxicons/css/boxicons.min.css}" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="/static/assets/css/style.css" th:href="@{/assets/css/style.css}" rel="stylesheet">
+  <link href="/static/assets/css/custom.css" th:href="@{/assets/css/custom.css}" rel="stylesheet">
+  <script src='https://www.google.com/recaptcha/api.js'></script>
+</head>
+
+<body>
+
+  <main id="main" class="main" style="margin-left: 10%; margin-right: 10%">
+
+    <div class="pagetitle">
+      <h1>Contact</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item">Pages</li>
+          <li class="breadcrumb-item active" >Contact</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section contact">
+
+      <div class="row gy-4">
+
+        <div class="col-xl-6">
+
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="info-box card">
+                <i class="bi bi-geo-alt"></i>
+                <h3>Address</h3>
+                <p>A108 Adam Street,<br>New York, NY 535022</p>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="info-box card">
+                <i class="bi bi-telephone"></i>
+                <h3>Call Us</h3>
+                <p>+1 5589 55488 55<br>+1 6678 254445 41</p>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="info-box card">
+                <i class="bi bi-envelope"></i>
+                <h3>Email Us</h3>
+                <p>info@example.com<br>contact@example.com</p>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="info-box card">
+                <i class="bi bi-clock"></i>
+                <h3>Open Hours</h3>
+                <p>Monday - Friday<br>9:00AM - 05:00PM</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="col-xl-6">
+          <div class="card p-4">
+            <div th:if="${param.error}" style="height: 44px" class="alert alert-danger alert-dismissible fade show" role="alert">
+              <p  th:text="${param.error}">Error</p>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <div th:if="${!#strings.isEmpty(message)}" style="height: 44px" class="alert alert-info alert-dismissible fade show" role="alert">
+              <p  th:text="${message}">Message</p>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <form action="" th:action="@{/contact}" th:object="${contact_request}" method="post" class="php-email-form">
+              <div class="row gy-4">
+
+                <div class="col-md-6">
+                  <label for="name" class="form-label input-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">name </label>
+                  <input type="text" th:field="*{name}" name="name" id="name" class="form-control" placeholder="Your Name" required>
+                </div>
+
+                <div class="col-md-6 ">
+                  <label for="email" class="form-label input-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">email </label>
+                  <input type="email" th:field="*{email}" class="form-control" name="email" id="email" placeholder="Your Email" required>
+                </div>
+
+                <div class="col-md-12">
+                  <label for="subject" class="form-label input-error" th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}">subject </label>
+                  <input type="text" th:field="*{subject}" class="form-control" name="subject" id="subject" placeholder="Subject" required>
+                </div>
+
+                <div class="col-md-12">
+                  <label for="message" class="form-label input-error" th:if="${#fields.hasErrors('message')}" th:errors="*{message}">message </label>
+                  <textarea class="form-control" th:field="*{message}" name="message" id="message" rows="6" placeholder="Message" required></textarea>
+                </div>
+                <div class="col-12" th:if="${@environment.getProperty('google.recaptcha.enable')}">
+                  <div class="g-recaptcha col-sm-5" th:attr="data-sitekey=${@captchaService.getReCaptchaSite()}"
+                       data-callback="onReCaptchaSuccess" data-expired-callback="onReCaptchaExpired"></div>
+                  <span id="captchaError" class="alert alert-danger col-sm-4" style="display:none"></span>
+                </div>
+                <div class="col-md-12 text-center">
+                  <button type="submit">Send Message</button>
+                </div>
+
+              </div>
+            </form>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer" style="margin-left: 10%; margin-right: 10%">
+
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="/static/assets/vendor/apexcharts/apexcharts.min.js" th:src="@{/assets/vendor/apexcharts/apexcharts.min.js}"></script>
+  <script src="/static/assets/vendor/bootstrap/js/bootstrap.bundle.min.js" th:src="@{/assets/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+  <!-- Template Main JS File -->
+  <script src="/static/assets/js/main.js" th:src="@{/assets/js/main.js}"></script>
+
+</body>
+
+</html>
