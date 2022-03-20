@@ -4,9 +4,9 @@ services:
   config-server:
     image: ${GROUP_ID}/config-server:${CONFIG_SERVER_VERSION:-latest}
     healthcheck:
-      test: [ "CMD", "curl --fail --silent localhost:8888/actuator/health | grep UP || exit 1" ]
+      test: [ "CMD","curl --fail --silent localhost:8888/actuator/health | grep UP || exit 1" ]
       interval: 10s
-      timeout: 5s
+      timeout: 20s
       retries: 5
     ports:
       - "8888:8888"
@@ -22,3 +22,5 @@ services:
       spring.cloud.config.server.git.uri: /application/config-repository
       encrypt.key: ${SPRING_ENCRYPT_KEY}
       server.port: 8888
+    networks:
+      - ${GLOBAL_NETWORK:-services}

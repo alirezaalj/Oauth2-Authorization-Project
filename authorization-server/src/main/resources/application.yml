@@ -1,2 +1,9 @@
 server:
   port: 9000
+
+spring:
+  sql:
+    init:
+      platform: postgres
+      mode: always
+      schema-locations: classpath:data/create_table.sql

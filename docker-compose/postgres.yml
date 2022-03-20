@@ -4,15 +4,15 @@ services:
   postgres:
     image: postgres:${POSTGRES_VERSION:-14.1-alpine}
     user: postgres
-    restart: always
     hostname: postgres
+    restart: always
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
       interval: 10s
       timeout: 5s
       retries: 5
-    ports:
-      - ${POSTGRES_PORT}:5432
+#    ports:
+#      - ${POSTGRES_PORT}:5432
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASS}

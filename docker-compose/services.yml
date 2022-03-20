@@ -10,8 +10,12 @@ services:
         condition: service_started
       postgres:
         condition: service_healthy
-      config-server:
-        condition: service_healthy
+#      config-server:
+#        condition: service_healthy
+    links:
+      - redis
+      - postgres
+      - config-server
     volumes:
       - "./OAuthApplication/oauth-server/logs:/application/logs"
       - "../conf/keys:/application/conf/keys"
@@ -22,12 +26,20 @@ services:
       jasypt.encryptor.password: ${JASYPT_ENCRYPTOR_PASSWORD}
       # config server
       encrypt.key: ${SPRING_ENCRYPT_KEY}
-      spring.cloud.config.uri: http://localhost:8888
-      spring.cloud.config.profile: base,application,app,postgres,mail-me,ssl
+      spring.cloud.config.uri: http://config-server:8888
+      spring.cloud.config.profile: base,application,app,postgres,mail,redis,logfile
       spring.cloud.config.username: spring_config_user
       spring.cloud.config.password: '{cipher}117a3f626361ebef83d1a1f14315b64cf1afc41c5a81f238c31cbaae5cbbd11d99ecb66a8d01471b43a6e4679f2429d9'
       spring.cloud.config.label: master
       # application
       application.security.key-dir: "/application/conf/keys"
+      postgres.host: postgres
+      postgres.port: ${POSTGRES_PORT}
+      postgres.pass: ${POSTGRES_PASS}
+      postgres.user: ${POSTGRES_USER}
+      postgres.db: oauth_server_db
+      # redis
+      spring.redis.host: redis
+      spring.redis.port: 6379
     networks:
       - ${GLOBAL_NETWORK:-services}
