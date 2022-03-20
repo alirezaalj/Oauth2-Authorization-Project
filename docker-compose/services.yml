@@ -3,6 +3,7 @@ version: '3.9'
 services:
   auth-service:
     image: ${GROUP_ID}/authorization-server:${SERVICE_VERSION:-latest}
+    restart: unless-stopped
     ports:
       - "9000:9000"
     depends_on:
@@ -10,8 +11,8 @@ services:
         condition: service_started
       postgres:
         condition: service_healthy
-#      config-server:
-#        condition: service_healthy
+      config-server:
+        condition: service_healthy
     links:
       - redis
       - postgres
