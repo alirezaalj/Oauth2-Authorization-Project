@@ -9,8 +9,8 @@ services:
       interval: 10s
       timeout: 10s
       retries: 5
-#    ports:
-#      - "8888:8888"
+    ports:
+      - "8888:8888"
     volumes:
       - "./OAuthApplication/config-server/logs:/application/logs/"
       - "../conf/config-repository/:/application/config-repository"

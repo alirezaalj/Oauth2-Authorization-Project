@@ -1,14 +1,20 @@
 package ir.alirezaalijani.security.authorization.service.security.config;
 
-import ir.alirezaalijani.security.authorization.service.security.service.LoginAttempt;
+import ir.alirezaalijani.security.authorization.service.security.config.oauth.WebSecurityConfig;
+import ir.alirezaalijani.security.authorization.service.security.service.attempt.LoginAttempt;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
@@ -53,12 +59,21 @@ public class SecurityBeanConfigs {
     }
 
     @Bean
-    public static RedisOperations<String, LoginAttempt> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+    public RedisOperations<String, LoginAttempt> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         var redisTemplate = new RedisTemplate<String ,LoginAttempt>();
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(LoginAttempt.class));
         redisTemplate.setConnectionFactory(redisConnectionFactory);
         redisTemplate.afterPropertiesSet();
         return redisTemplate;
     }
+
+    @Bean
+    public RememberMeServices rememberMeServices(UserDetailsService userDetailsService){
+        return new TokenBasedRememberMeServices("dsklvdsvlkdsvldsnv",userDetailsService);
+    }
+
     protected static PathMatcher pathMatcher() {
         return new AntPathMatcher();
     }
@@ -70,6 +85,17 @@ public class SecurityBeanConfigs {
                 if (pathMatcher().match(path, uri)) {
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    protected static boolean isLoginProcess(HttpServletRequest request){
+        if (request!=null){
+            String uri=request.getRequestURI();
+            HttpMethod method= HttpMethod.valueOf(request.getMethod());
+            if (method.equals(HttpMethod.POST)){
+               return pathMatcher().match(WebSecurityConfig.LOGIN_PROCESSING_Url,uri);
             }
         }
         return false;

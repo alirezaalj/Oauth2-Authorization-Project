@@ -1,6 +1,6 @@
 package ir.alirezaalijani.security.authorization.service.security.config.listener;
 
-import ir.alirezaalijani.security.authorization.service.security.service.LoginAttemptService;
+import ir.alirezaalijani.security.authorization.service.security.service.attempt.LoginAttemptService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
@@ -23,7 +23,10 @@ public class AuthenticationFailureListener implements ApplicationListener<Authen
 
     @Override
     public void onApplicationEvent(final AuthenticationFailureBadCredentialsEvent event) {
-        
+        String authenticationName = event.getAuthentication().getName();
+        if (authenticationName!=null){
+            loginAttemptService.unameFailed(authenticationName);
+        }
         final String xfHeader = request.getHeader("X-Forwarded-For");
         final String ip;
         if (xfHeader == null) {

@@ -1,7 +1,7 @@
 package ir.alirezaalijani.security.authorization.service.security.captcha;
 
 import ir.alirezaalijani.security.authorization.service.security.CaptchaConfigData;
-import ir.alirezaalijani.security.authorization.service.security.service.LoginAttemptService;
+import ir.alirezaalijani.security.authorization.service.security.service.attempt.LoginAttemptService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;

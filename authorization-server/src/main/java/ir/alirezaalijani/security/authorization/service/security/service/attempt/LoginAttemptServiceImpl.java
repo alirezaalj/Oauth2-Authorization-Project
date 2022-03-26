@@ -1,4 +1,4 @@
-package ir.alirezaalijani.security.authorization.service.security.service;
+package ir.alirezaalijani.security.authorization.service.security.service.attempt;
 
 
 import com.google.common.cache.CacheBuilder;
@@ -21,10 +21,17 @@ import java.util.concurrent.TimeUnit;
 public class LoginAttemptServiceImpl  implements LoginAttemptService{
 
     private final LoadingCache<String, Integer> attemptsCache;
+    private final LoadingCache<String,Integer> usernameAttempts;
     private final ApplicationConfigData configData;
     public LoginAttemptServiceImpl(ApplicationConfigData configData) {
         this.configData=configData;
         this.attemptsCache = buildCache();
+        this.usernameAttempts= CacheBuilder.newBuilder().expireAfterWrite(10,TimeUnit.MINUTES).build(new CacheLoader<>() {
+            @Override
+            public Integer load(String s) throws Exception {
+                return 0;
+            }
+        });
     }
 
     private LoadingCache<String, Integer> buildCache(){
@@ -62,6 +69,32 @@ public class LoginAttemptServiceImpl  implements LoginAttemptService{
     public boolean isBlocked(final String key) {
         try {
             return attemptsCache.get(key) >= this.configData.sec_login_fall_max_attempt;
+        } catch (final ExecutionException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public void unameFailed(String authenticationName) {
+        int attempts = 0;
+        try {
+            attempts = usernameAttempts.get(authenticationName);
+        } catch (final ExecutionException e) {
+            log.error(e.getMessage());
+        }
+        attempts++;
+        usernameAttempts.put(authenticationName, attempts);
+    }
+
+    @Override
+    public void unameSucceeded(String authenticationName) {
+       this.usernameAttempts.invalidate(authenticationName);
+    }
+
+    @Override
+    public boolean unameBlocked(String authenticationName) {
+        try {
+            return usernameAttempts.get(authenticationName) >= 5;
         } catch (final ExecutionException e) {
             return false;
         }

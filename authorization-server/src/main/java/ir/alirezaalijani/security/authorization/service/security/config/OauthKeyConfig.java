@@ -21,8 +21,12 @@ import java.util.UUID;
 @Configuration
 public class OauthKeyConfig {
 
-    @Value("${application.security.key-dir:keys}")
-    private String keysDir;
+    @Value("${application.security.key-store.file:keys}")
+    private String keyStoreFile;
+    @Value("${application.security.key-store.alias:oauth-server}")
+    private String keyAlias;
+    @Value("${application.security.key-store.password:password}")
+    private String keyStorePassword;
 
     @Bean
     public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
@@ -47,9 +51,14 @@ public class OauthKeyConfig {
     }
 
     private KeyPair generateRsaKey() {
-        KeyPair keyPair = RSAKeyUtil.loadKeyFromDir(keysDir);
+        KeyPair keyPair = RSAKeyUtil.getKeyPair(keyStoreFile,keyStorePassword,keyAlias);
         if (keyPair==null){
             keyPair= RSAKeyUtil.generateNewRsaKey();
+            try {
+                RSAKeyUtil.saveKeyToKeyStore(keyPair,keyStoreFile,keyStorePassword,keyAlias);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
         return keyPair;
     }

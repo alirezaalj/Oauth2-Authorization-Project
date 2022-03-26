@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+application:
+  hosts:
+    - localhost
+    - 127.0.0.1
+  resource-servers:
+    - 127.0.0.1
+    - localhost
+
+spring:
+  redis:
+    host: localhost
+    database: 1
+    port: 6379
+  cloud:
+    discovery:
+      client:
+        simple:
+          instances:
+            auth-server:
+              - uri: http://localhost:9000
+              - uri: http://127.0.0.1:9001

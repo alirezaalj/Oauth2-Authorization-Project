@@ -1,5 +1,6 @@
 package ir.alirezaalijani.security.authorization.service.web;
 
+import ir.alirezaalijani.security.authorization.service.security.util.HttpUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
@@ -22,19 +23,22 @@ public class CustomPageErrorController implements ErrorController {
         if (forwardPath.startsWith("/api")){
             return "forward:/api/error?error="+status.toString();
         }
+
         if (status != null) {
             return switch (HttpStatus.valueOf(Integer.parseInt(status.toString()))){
                 case NOT_FOUND -> "error/error-404-default";
                 case INTERNAL_SERVER_ERROR -> "error/error-500-default";
                 case FORBIDDEN -> "error/error-403-default";
 //                case UNAUTHORIZED -> "redirect:/auth/login?error=Username Or Password is Wrong";
-                case UNAUTHORIZED -> "redirect:/auth/login";
-                case TOO_MANY_REQUESTS -> "redirect:/auth/login?error=You are Limited Pleas try after 24 hour";
+                case UNAUTHORIZED -> "error/error-401-default";
+                case TOO_MANY_REQUESTS -> "redirect:"+ HttpUtil.getForwardedHost(request)+"/auth/login?error=You are Limited Pleas try after 24 hour";
+                case PRECONDITION_FAILED -> "redirect:"+HttpUtil.getForwardedHost(request)+"/auth/login?error=Username is Limited. Pleas try after 5 Minute";
                 default -> "error/error-default";
             };
         }
         return "error/error-default";
     }
+
 
     @GetMapping("/error/access-denied")
     public String showAccessDenied() {

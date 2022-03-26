@@ -11,7 +11,7 @@
     <groupId>ir.alirezaalijani.security</groupId>
     <artifactId>authorization-server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Spring Security Authorization Service</name>
+    <name>authorization-server</name>
     <description>Spring Security Authorization Service</description>
 
     <properties>
@@ -56,6 +56,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>4.1.1</version>
         </dependency>
         <!--        end:datasource    -->
         <!--        start:security    -->

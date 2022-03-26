@@ -1,6 +1,6 @@
 package ir.alirezaalijani.security.authorization.service.security.config.listener;
 
-import ir.alirezaalijani.security.authorization.service.security.service.LoginAttemptService;
+import ir.alirezaalijani.security.authorization.service.security.service.attempt.LoginAttemptService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;

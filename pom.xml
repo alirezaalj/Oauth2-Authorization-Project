@@ -11,6 +11,8 @@
 
     <modules>
         <module>authorization-server</module>
+        <module>config-server</module>
+        <module>gateway-server</module>
     </modules>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
