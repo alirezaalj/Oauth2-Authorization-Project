@@ -1,0 +1,39 @@
+spring.config.activate.on-profile: app
+application:
+  info:
+    name: 'Cloud Oauth Service'
+    host: http://localhost:9000
+    contact-email: contact@alirezaalijani.ir
+  security:
+    key-store:
+      file: conf/keys/oauth-keystore.jks
+      alias: oauth-server
+      password: password
+    encryption:
+      token:
+        secret-key: 'tokenKey'
+        salt: '5c0744940b5c369b'
+    login:
+      theme: default
+      validator:
+        validate-url: ${application.info.host}/verification/{path}/{token}
+      fall:
+        service: redis # redis or memory
+        max-attempt: 10
+        expire-after:
+          duration: 1
+          unit: DAYS
+
+google:
+  recaptcha:
+    enable: false
+    key:
+      site: 6Lf6I_gbAAAAAGd4LniL4OFKq15fz1JjYYTyDb-D # your google key-site
+      secret: 6Lf6I_gbAAAAABFPyh08YdWjYOqcNpbsExskU-bY # your google key-secret
+
+retry-config:
+  initial-interval-ms: 1000
+  max-interval-ms: 10000
+  multiplier: 2.0
+  maxAttempts: 3
+  sleep-time-ms: 2000

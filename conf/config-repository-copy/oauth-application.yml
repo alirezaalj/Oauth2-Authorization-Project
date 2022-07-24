@@ -1,0 +1,20 @@
+server:
+  port: 9000
+
+spring:
+  main:
+    banner-mode: console
+  thymeleaf:
+    cache: false
+  mvc:
+    log-resolved-exception: off
+---
+spring.config.activate.on-profile: logfile
+logging:
+  file:
+    path: ./logs
+    name: logs/oauth-server.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 7

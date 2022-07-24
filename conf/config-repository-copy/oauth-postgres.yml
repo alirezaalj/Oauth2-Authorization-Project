@@ -1,0 +1,29 @@
+postgres:
+  host: localhost
+  db: oauth_server_db
+  user: postgres
+  pass: postgres
+  port: 5432
+
+spring.config.activate.on-profile: postgres
+spring:
+  jpa:
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL9Dialect
+    show-sql: false
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:postgresql://${postgres.host}:${postgres.port}/${postgres.db}?currentSchema=public&binaryTransfer=true&reWriteBatchedInserts=true
+    username: ${postgres.user}
+    password: ${postgres.pass}
+    driver-class-name: org.postgresql.Driver
+  sql:
+    init:
+      platform: postgres
+      mode: always

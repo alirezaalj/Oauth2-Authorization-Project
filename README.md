@@ -50,6 +50,12 @@ wget https://github.com/alirezaalj/Spring-Security-Authorization-Service/archive
 2. go to project folder open command line in there
 ```shell
 cd Spring-Security-Authorization-Service
+cp config-repository-copy/* config-repository/
+cd config-repository 
+git init
+git add .
+git commit -m "Initial commit" 
+cd ..
 ```
 3. Change **auth-app-env** file configs
    change email configs in here is use gmail
