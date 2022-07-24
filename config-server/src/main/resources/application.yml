@@ -9,7 +9,7 @@ spring:
     config:
       server:
         git:
-          uri: /home/alireza/Documents/workSpace/company/company-limondev/projects/Security Projects/Oauth2 Authorization Project/conf/config-repository
+          uri: ${user.dir}/conf/config-repository
           default-label: master
       enabled: true
   security:
