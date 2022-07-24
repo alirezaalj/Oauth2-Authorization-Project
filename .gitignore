@@ -6,6 +6,7 @@ target/
 *-mail-me.yml
 *.log
 *.gz
+conf/config-repository/**
 ### STS ###
 .apt_generated
 .classpath
