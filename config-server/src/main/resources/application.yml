@@ -1,22 +1,21 @@
 server:
   port: 8888
-
-encrypt:
-  key: password
-
 spring:
   cloud:
     config:
       server:
         git:
           uri: ${user.dir}/conf/config-repository
-          default-label: master
+          default-label: master # or origin
       enabled: true
   security:
     user:
       name: spring_config_user
       # password : spring_config_user
       password: '{cipher}117a3f626361ebef83d1a1f14315b64cf1afc41c5a81f238c31cbaae5cbbd11d99ecb66a8d01471b43a6e4679f2429d9'
+
+encrypt:
+  key: password
 ---
 spring.config.activate.on-profile: logfile
 logging:

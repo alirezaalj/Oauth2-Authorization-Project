@@ -5,9 +5,11 @@ services:
     image: redis:latest
     restart: always
     hostname: redis
+    # TODO: Config redis username and password
     ports:
       - "6379:6379"
 #    volumes:
+    # TODO: config redis container to save data on disk
 #      - cache:/data
     networks:
       - ${GLOBAL_NETWORK:-services}

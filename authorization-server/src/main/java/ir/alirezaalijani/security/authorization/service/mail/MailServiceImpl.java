@@ -14,6 +14,7 @@ import java.util.Date;
 @Slf4j
 @Service
 public class MailServiceImpl implements MailService {
+    // TODO: use my-spring-mail-module
     private final MailRepository mailRepository;
     private final ApplicationEventPublisher eventPublisher;
 

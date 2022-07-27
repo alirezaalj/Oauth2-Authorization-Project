@@ -125,6 +125,7 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
+
         <!--        end:util      -->
         <!--        start:devtool & management   -->
         <dependency>
@@ -149,8 +150,22 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>ir.alirezaalijani</groupId>-->
+<!--            <artifactId>spring-mail-module</artifactId>-->
+<!--            <version>0.0.1</version>-->
+<!--        </dependency>-->
     </dependencies>
-
+<!--    <repositories>-->
+<!--        <repository>-->
+<!--            <id>PROJECT-REPO-URL</id>-->
+<!--            <url>https://raw.githubusercontent.com/alirezaalj/spring-mail-module/master/target/mvn-artifact/</url>-->
+<!--            <snapshots>-->
+<!--                <enabled>true</enabled>-->
+<!--                <updatePolicy>always</updatePolicy>-->
+<!--            </snapshots>-->
+<!--        </repository>-->
+<!--    </repositories>-->
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -203,7 +218,7 @@
                         <phase>install</phase>
                         <goals>
                             <goal>build</goal>
-<!--                            <goal>push</goal>-->
+                            <!--                            <goal>push</goal>-->
                         </goals>
                     </execution>
                 </executions>

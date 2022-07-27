@@ -18,6 +18,8 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASS}
       - POSTGRES_DB=oauth_server_db
     volumes:
+      # TODO: config container to save data on disk
+      # TODO: config auth-server for start up data insertion
 #      - ./datasource/data:/var/lib/postgresql/data #permision problem
       - ./datasource/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
