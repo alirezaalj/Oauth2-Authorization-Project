@@ -148,15 +148,15 @@ spring:
 - postgres : Run `postgres` on port **`5432`** with username: `postgres` And password: `postgres`
 - *i suggest using docker*
 - dockerhub : [https://hub.docker.com/_/postgres](https://hub.docker.com/_/postgres "https://hub.docker.com/_/postgres")
-- create new database whit name : **oauth_server_db**
-```shell
-docker exec -it postgresql-container psql -U postgres -c "CREATE DATABASE oauth_server_db;"
-```
 - using this commands for *pull *and use **postgres** whit docker
 - run and pull PostgreSQL whit docker and config password to **postgres**  on port **5432**
 
 ```shell
 docker run --name postgresql-container -p 5432:5432 -e POSTGRES_PASSWORD=postgres -d postgres
+```
+- create new database whit name : **oauth_server_db**
+```shell
+docker exec -it postgresql-container psql -U postgres -c "CREATE DATABASE oauth_server_db;"
 ```
 - you can use **pgadmin4**  connecting to postgrsql
 - if you are running postgrsql in your machine you can change **conf/config-repository/oauth-postgres.yml** file :
@@ -231,13 +231,13 @@ mvn spring-boot:run
 - http://localhost:8888/oauth-mail.yml
 - http://localhost:8888/oauth-postgres.yml
 - http://localhost:8888/oauth-redis.yml
-10. If you are seen error like : _`error: invalid remote: origin`_ it's because of bad configuration try change configuration file in **`config-server/src/main/resources/application.yml`** and change `uri` to absolute path of `conf/config-repository` or `default-label` to `origin`
+10. If you are seen error like : _`error: invalid remote: origin`_ it's because of bad configuration try change configuration file in **`config-server/src/main/resources/application.yml`** and change `uri` to absolute path of `conf/config-repository`
 ```yaml
     config:
       server:
         git:
-          uri: /home/user/Oauth-Authorization-Project/conf/config-repository  # path to 'conf/config-repository' directory you can replace it with absolute path 
-          default-label: orgin # git label ( master or origin )
+          uri: /home/user/Oauth2-Authorization-Project/conf/config-repository  # path to 'conf/config-repository' directory you can replace it with absolute path 
+          default-label: master
 ```
 #### After running Config Server we can run **`authorization-server`**
 #### dependency:
