@@ -35,12 +35,8 @@ This service can be used as register server
 - docker-compose : [Overview of Docker Compose](https://docs.docker.com/compose/ "Overview of Docker Compose")
 - maven  : [How to use or Download](https://maven.apache.org/ "How to use or Download")
 - java 17
-- gmail account or other smtp email account
-  if using gmail first do fallow this two-step
-  1- [Two-Step Verification should be turned off.](https://support.google.com/accounts/answer/1064203?hl=en "Two Step Verification should be turned off.")
-  2- [Allow Less Secure App(should be turned on).](https://myaccount.google.com/lesssecureapps "Allow Less Secure App(should be turned on).")
-
-#### Config
+- 
+#### Config Project
 1. Download or clone project
 ```shell
 git clone https://github.com/alirezaalj/Spring-Security-Authorization-Service.git
@@ -57,50 +53,42 @@ git add .
 git commit -m "Initial commit" 
 cd ..
 ```
-3. Change **auth-app-env** file configs
-   change email configs in here is use gmail
- ```
-SPRING_MAIL_HOST=smtp.gmail.com
-SPRING_MAIL_HOST_PORT=587
-SPRING_MAIL_USERNAME=<your_gmail_account>
-SPRING_MAIL_PASSWORD=<account_password>
+#### email
+- ~~gmail~~ account or other smtp email account
+- **~~gmail~~ no longer support for Allow Less Secure App. So you should use other mail hosting.**
+- if using ~~gmail~~ first do fallow this two-step (no longer support)
+  ######1- [Two-Step Verification should be turned off.](https://support.google.com/accounts/answer/1064203?hl=en "Two Step Verification should be turned off.")
+  ######2- [Allow Less Secure App(should be turned on).](https://myaccount.google.com/lesssecureapps "Allow Less Secure App(should be turned on).")
+  add your email info to **conf/config-repository/oauth-mail.yml** file and host info
+```yml
+my-spring:
+  mail:
+    host: <your smtp host> # your smtp host
+    port: 587 # your smtp host port
+    username: <your_emai_account> # your smtp account username
+    password: <your_email_accunt_password>  #your smtp account password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+          starttls:
+            enable: true # if your host has TLS is enabled else set false
 ```
-###### change other configs if you need
-> the **recaptcha keys** in
-> config file are for the **localhost**  if you are running
-> on localhost there is no need to change them. or 
-> config recaptcha enable to **false**
-```
-## application name
-APPLICATION_INFO_NAME=Alireza Alijani Auth Service
-## application domian
-APPLICATION_INFO_HOST=security.alirezaalijani.ir
-## contact email
-APPLICATION_INFO_CONTACT_EMAIL=contact@alirezaalijani.ir
-## encrypting keys
-APPLICATION_SECURITY_ENCRYPTION_TOKEN_SECRET_KEY=tokenKey
-APPLICATION_SECURITY_ENCRYPTION_TOKEN_SALT=5c0744940b5c369b
-## token validation url - only domain can be changed
-APPLICATION_SECURITY_LOGIN_VALIDATOR_VALIDATE_URL=http://localhost:9000/verification/{path}/{token}
-## some client application redirect after login with token 
-APPLICATION_SECURITY_LOGIN_SUCCESS_REDIRECT_URL=http://localhost:4200/validate/{token}
-## google recaptch configs
-GOOGLE_RECAPTCHA_ENABLE=true
-GOOGLE_RECAPTCHA_KEY_SITE=<your domain recaptcha site>
-GOOGLE_RECAPTCHA_KEY_SECRET=<your domain recaptcha key>
-```
-4. In application folder build **jar** file and **docker image**
+3. After Any change in **`conf/config-repository`** you must run `git commit -m "Config commit"`
+4. Change **config-dev.env** file configs:
+
+5. In application folder **`cd Spring-Security-Authorization-Service`** build **jar** file and **docker image**
 ```shell
 mvn clean install -DskipTests
 ```
-5. Run docker compose
+5. Run Application docker compose
 ```shell
 cd docker-compose
-# without ssl
-docker-compose --env-file auth-app-env up
 
-# with ssl
-docker-compose --env-file auth-app-env-ssl up
+docker-compose --env-file config-dev.env up
 ```
 ##### application is ready on http://localhost:9000/
 >Use postman for Oauth client authorization: **pkce, authorization_code**
@@ -109,6 +97,13 @@ docker-compose --env-file auth-app-env-ssl up
 > 
 > application by default add 3 Oauth clients 
 
+6. Stop Application : docker compose
+```shell
+cd docker-compose
+
+docker-compose --env-file config-dev.env dwon
+```
+------
 [![home](https://raw.githubusercontent.com/alirezaalj/Spring-Security-Authorization-Service/master/imgs/home.png "home")](https://raw.githubusercontent.com/alirezaalj/Spring-Security-Authorization-Service/master/imgs/home.png "home")
 ##### login  http://localhost:9000/auth/login
 [![login](https://raw.githubusercontent.com/alirezaalj/Spring-Security-Authorization-Service/master/imgs/login.png "login")](https://raw.githubusercontent.com/alirezaalj/Spring-Security-Authorization-Service/master/imgs/login.png "login")
