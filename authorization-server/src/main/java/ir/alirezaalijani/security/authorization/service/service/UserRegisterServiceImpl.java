@@ -3,9 +3,6 @@ package ir.alirezaalijani.security.authorization.service.service;
 import ir.alirezaalijani.security.authorization.service.config.ApplicationConfigData;
 import ir.alirezaalijani.security.authorization.service.domain.request.PasswordUserTokenRequest;
 import ir.alirezaalijani.security.authorization.service.domain.request.RegisterRequest;
-import ir.alirezaalijani.security.authorization.service.mail.MailService;
-import ir.alirezaalijani.security.authorization.service.mail.model.DefaultTemplateMail;
-import ir.alirezaalijani.security.authorization.service.mail.model.UserVerificationMail;
 import ir.alirezaalijani.security.authorization.service.repository.RoleRepository;
 import ir.alirezaalijani.security.authorization.service.repository.TokenRepository;
 import ir.alirezaalijani.security.authorization.service.repository.UserRepository;
@@ -14,12 +11,16 @@ import ir.alirezaalijani.security.authorization.service.repository.model.User;
 import ir.alirezaalijani.security.authorization.service.security.service.encryption.DataEncryptor;
 import ir.alirezaalijani.security.authorization.service.security.token.UserMailToken;
 import ir.alirezaalijani.security.authorization.service.web.error.exception.EntityNotFoundException;
+import ir.alirezaalijani.spring.mail.module.mail.MailService;
+import ir.alirezaalijani.spring.mail.module.mail.templates.DefaultMailTemplate;
+import ir.alirezaalijani.spring.mail.module.mail.templates.TemplateType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Date;
@@ -40,6 +41,7 @@ public class UserRegisterServiceImpl implements UserRegisterService {
     private final ApplicationConfigData applicationConfigData;
 
     private final UserService userService;
+
     public UserRegisterServiceImpl(UserRepository userRepository,
                                    PasswordEncoder passwordEncoder,
                                    RoleRepository roleRepository,
@@ -75,11 +77,11 @@ public class UserRegisterServiceImpl implements UserRegisterService {
                 .serviceAccess(true)
                 .roles(roles).build();
         var newUser = userRepository.save(user);
-        log.info("Register new User {} was successful",newUser.getUsername());
+        log.info("Register new User {} was successful", newUser.getUsername());
         sendVerificationEmail(newUser);
         return newUser;
     }
-    
+
     @Override
     public boolean resendEmailVerificationEmail(String email) {
         return sendVerificationEmail(userService.findUserByEmail(email));
@@ -87,23 +89,28 @@ public class UserRegisterServiceImpl implements UserRegisterService {
 
     @Override
     public boolean sendUsernameEmail(String email) {
-        var user=userService.findUserByEmail(email);
-        var userInfoText="Username:"+user.getUsername()+" <\br>"+
-                "Email:"+user.getEmail()+" <\br>"+
-                "Enable:"+(user.getEmailVerification()&&user.getEnable());
-        var userInfoEmail= new DefaultTemplateMail(
-                user.getEmail(),"no-reply@" + applicationConfigData.application_host,
-                "Account Info",
-                userInfoText,applicationConfigData.application_host,
-                "mail/default-mail"
-        );
-        mailService.publishMail(userInfoEmail);
+        var user = userService.findUserByEmail(email);
+        var userInfoText = "Username:" + user.getUsername() + " <\br>" +
+                "Email:" + user.getEmail() + " <\br>" +
+                "Enable:" + (user.getEmailVerification() && user.getEnable());
+        var userInfoEmail =
+                new DefaultMailTemplate(
+                        user.getEmail(), applicationConfigData.application_service_mail,
+                        "Account Info",
+                        userInfoText,
+                        applicationConfigData.application_host,
+                        TemplateType.Blue,
+                        "Account Info", applicationConfigData.application_host,
+                        "Account Info", "Authorization Server",
+                        applicationConfigData.application_host
+                );
+        mailService.sendEmail(userInfoEmail);
         return true;
     }
 
     @Override
     public boolean sendPasswordEmail(String email) {
-        var user=userService.findUserByUsername(email);
+        var user = userService.findUserByUsername(email);
         var mailToken = UserMailToken.builder()
                 .id(UUID.randomUUID().toString())
                 .username(user.getUsername())
@@ -111,18 +118,22 @@ public class UserRegisterServiceImpl implements UserRegisterService {
                 .expiration(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(10)))
                 .build();
         var token = simpleJsonEncryptor.encryptDataToToken(mailToken);
-        if(token!=null){
-            var actionUrl=applicationConfigData.sec_login_email_validate_url
+        if (token != null) {
+            var actionUrl = applicationConfigData.sec_login_email_validate_url
                     .replace("{token}", token)
-                    .replace("{path}","password");
+                    .replace("{path}", "password");
             var verificationMail =
-                    new UserVerificationMail(user.getEmail(),
-                            "no-reply@" + applicationConfigData.application_host,
+                    new DefaultMailTemplate(
+                            user.getEmail(), applicationConfigData.application_service_mail,
                             "Change Your Password",
-                            applicationConfigData.application_host,
-                            actionUrl,
                             "You Can use the link at blow to change your account password.",
-                            "mail/default-mail"
+                            actionUrl,
+                            TemplateType.Blue,
+                            "Change Password",
+                            applicationConfigData.application_host,
+                            "Change",
+                            "Authorization Server",
+                            applicationConfigData.application_host
                     );
             var applicationToken = ApplicationToken.builder()
                     .id(mailToken.getId())
@@ -132,13 +143,13 @@ public class UserRegisterServiceImpl implements UserRegisterService {
                     .token(token)
                     .build();
             tokenRepository.save(applicationToken);
-            mailService.publishMail(verificationMail);
+            mailService.sendEmail(verificationMail);
             return true;
         }
         return false;
     }
 
-    private boolean sendVerificationEmail(User user){
+    private boolean sendVerificationEmail(User user) {
         var mailToken = UserMailToken.builder()
                 .id(UUID.randomUUID().toString())
                 .username(user.getUsername())
@@ -146,18 +157,22 @@ public class UserRegisterServiceImpl implements UserRegisterService {
                 .expiration(new Date(System.currentTimeMillis() + (5 * DAY_IN_MS)))
                 .build();
         var token = simpleJsonEncryptor.encryptDataToToken(mailToken);
-        if(token!=null){
+        if (token != null) {
             var emailVerifyActionUrl = applicationConfigData.sec_login_email_validate_url
                     .replace("{token}", token)
-                    .replace("{path}","email");
+                    .replace("{path}", "email");
             var verificationMail =
-                    new UserVerificationMail(user.getEmail(),
-                            "no-reply@" + applicationConfigData.application_host,
+                    new DefaultMailTemplate(
+                            user.getEmail(), applicationConfigData.application_service_mail,
+                            "Verify Your Account",
+                            "Register new Account was successfully. Pleas Verify Your Email",
+                            emailVerifyActionUrl,
+                            TemplateType.Blue,
                             "Verify Your Account",
                             applicationConfigData.application_host,
-                            emailVerifyActionUrl,
-                            "Register new Account was successfully. Pleas Verify Your Email",
-                            "mail/verify-mail"
+                            "Verify",
+                            "Authorization Server",
+                            applicationConfigData.application_host
                     );
             var applicationToken = ApplicationToken.builder()
                     .id(mailToken.getId())
@@ -167,7 +182,7 @@ public class UserRegisterServiceImpl implements UserRegisterService {
                     .token(token)
                     .build();
             tokenRepository.save(applicationToken);
-            mailService.publishMail(verificationMail);
+            mailService.sendEmail(verificationMail);
         }
         return false;
     }
@@ -182,9 +197,9 @@ public class UserRegisterServiceImpl implements UserRegisterService {
                 if (user != null && !user.getEmailVerification()) {
                     user.setEmailVerification(true);
                     userRepository.save(user);
-                    log.info("User {} verify the email {}",user.getUsername(),user.getEmail());
+                    log.info("User {} verify the email {}", user.getUsername(), user.getEmail());
                     tokenRepository.updateTokenUsed(mailToken.getId());
-                    log.info("Token '{}' is used",mailToken.getId());
+                    log.info("Token '{}' is used", mailToken.getId());
                     return true;
                 }
             }
@@ -200,7 +215,7 @@ public class UserRegisterServiceImpl implements UserRegisterService {
             if (mailToken != null && tokenCanBeUsed(mailToken.getId()) && mailToken.getExpiration().compareTo(new Date()) > 0) {
                 User user = userService.findUserByUsername(mailToken.getUsername());
                 if (user != null && user.getEnable()) {
-                    log.info("Password token is valid {}",mailToken.getId());
+                    log.info("Password token is valid {}", mailToken.getId());
                     return true;
                 }
             }
@@ -211,19 +226,19 @@ public class UserRegisterServiceImpl implements UserRegisterService {
 
     @Override
     public boolean passwordChange(PasswordUserTokenRequest forgetRequest) {
-        if (forgetRequest != null && forgetRequest.getToken()!=null) {
+        if (forgetRequest != null && forgetRequest.getToken() != null) {
             UserMailToken mailToken = simpleJsonEncryptor.decryptTokenToData(forgetRequest.getToken(), UserMailToken.class);
             if (mailToken != null && tokenCanBeUsed(mailToken.getId()) && mailToken.getExpiration().compareTo(new Date()) > 0) {
                 User user = userService.findUserByUsername(mailToken.getUsername());
                 if (user != null && user.getEnable()) {
-                    log.info("Password token is valid {}",mailToken.getId());
+                    log.info("Password token is valid {}", mailToken.getId());
                     user.setPassword(passwordEncoder.encode(
                             DigestUtils.md5DigestAsHex(forgetRequest.getNewPassword().getBytes(StandardCharsets.UTF_8))
                     ));
                     userRepository.save(user);
-                    log.info("User {} password change",user.getUsername());
+                    log.info("User {} password change", user.getUsername());
                     tokenRepository.updateTokenUsed(mailToken.getId());
-                    log.info("Token '{}' is used",mailToken.getId());
+                    log.info("Token '{}' is used", mailToken.getId());
                     return true;
                 }
             }
@@ -239,12 +254,12 @@ public class UserRegisterServiceImpl implements UserRegisterService {
 
 
     @Override
-    public boolean userExistByEmailAndEmailVerified(String email,boolean verification) {
-        return userRepository.existsByEmailAndEmailVerification(email,verification);
+    public boolean userExistByEmailAndEmailVerified(String email, boolean verification) {
+        return userRepository.existsByEmailAndEmailVerification(email, verification);
     }
 
     @Override
     public boolean userExistByUsernameAndAccountEnable(String username, boolean b) {
-        return userRepository.existsByUsernameAndEmailVerificationAndEnable(username,b,b);
+        return userRepository.existsByUsernameAndEmailVerificationAndEnable(username, b, b);
     }
 }

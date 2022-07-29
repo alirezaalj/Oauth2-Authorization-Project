@@ -2,30 +2,29 @@ package ir.alirezaalijani.security.authorization.service.mail;
 
 import ir.alirezaalijani.security.authorization.service.repository.MailRepository;
 import ir.alirezaalijani.security.authorization.service.repository.model.ApplicationMail;
-import ir.alirezaalijani.security.authorization.service.mail.model.BasicMailMessage;
-import ir.alirezaalijani.security.authorization.service.mail.model.MailMessage;
-import ir.alirezaalijani.security.authorization.service.mail.model.TemplateMailMessage;
+import ir.alirezaalijani.spring.mail.module.mail.MailService;
+import ir.alirezaalijani.spring.mail.module.mail.model.BasicMailMessage;
+import ir.alirezaalijani.spring.mail.module.mail.model.HtmlMail;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
 @Slf4j
+@Primary
 @Service
-public class MailServiceImpl implements MailService {
-    // TODO: use my-spring-mail-module
-    private final MailRepository mailRepository;
-    private final ApplicationEventPublisher eventPublisher;
+public class AuthMailServiceImpl extends MailService {
 
-    public MailServiceImpl(MailRepository mailRepository,
-                           ApplicationEventPublisher eventPublisher) {
+    private final MailRepository mailRepository;
+
+    public AuthMailServiceImpl(MailRepository mailRepository) {
         this.mailRepository = mailRepository;
-        this.eventPublisher = eventPublisher;
     }
 
     @Override
     public void mailSend(BasicMailMessage mailMessage, boolean success) {
+        log.info("save mail to data base");
         var mail = ApplicationMail.builder();
         if (mailMessage != null) {
             mail = mail.fromMail(mailMessage.getFromMail())
@@ -35,17 +34,11 @@ public class MailServiceImpl implements MailService {
                     .subject(mailMessage.getSubject())
                     .actionUrl(mailMessage.getActionUrl())
                     .isSend(success);
-            if (mailMessage instanceof TemplateMailMessage) {
-                mail = mail
-                        .templateHtml(((TemplateMailMessage) mailMessage).getTemplateHtml());
+            if (mailMessage instanceof HtmlMail) {
+                mail = mail.templateHtml(((HtmlMail) mailMessage).getTemplateHtml());
             }
         }
         var applicationMail = mail.build();
         mailRepository.save(applicationMail);
-    }
-
-    @Override
-    public void publishMail(MailMessage mailMessage) {
-        eventPublisher.publishEvent(new MailSendEvent(mailMessage));
     }
 }

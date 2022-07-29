@@ -1,12 +1,8 @@
 package ir.alirezaalijani.security.authorization.service.service;
 
-import ir.alirezaalijani.security.authorization.service.mail.MailSendEvent;
-import ir.alirezaalijani.security.authorization.service.mail.model.PasswordChangeMail;
 import ir.alirezaalijani.security.authorization.service.repository.UserRepository;
 import ir.alirezaalijani.security.authorization.service.repository.model.User;
-import ir.alirezaalijani.security.authorization.service.security.service.encryption.DataEncryptor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,14 +16,11 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ApplicationEventPublisher applicationEventPublisher;
 
     public UserServiceImpl(UserRepository userRepository,
-                           PasswordEncoder passwordEncoder,
-                           ApplicationEventPublisher applicationEventPublisher) {
+                           PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Override
@@ -101,19 +94,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean sendPasswordChangeEmail(User user, String type, String message) {
-        PasswordChangeMail userPasswordChangeMail = null;
-//                new PasswordChangeMail(user.getEmail(), type,
-//                       "host",
-//                        user.getUsername(), message,
-//                        simpleJsonEncryptor
-//                                .encryptDataToToken(new PasswordChangeMailToken(UUID.randomUUID().toString(), user.getUsername()
-//                                                , user.getEmail()
-//                                                , new Date(System.currentTimeMillis() + (DAY_IN_MS))
-//                                        )
-//                                )
-//                );
-
-        applicationEventPublisher.publishEvent(new MailSendEvent(userPasswordChangeMail));
+//        PasswordChangeMail userPasswordChangeMail = null;
+////                new PasswordChangeMail(user.getEmail(), type,
+////                       "host",
+////                        user.getUsername(), message,
+////                        simpleJsonEncryptor
+////                                .encryptDataToToken(new PasswordChangeMailToken(UUID.randomUUID().toString(), user.getUsername()
+////                                                , user.getEmail()
+////                                                , new Date(System.currentTimeMillis() + (DAY_IN_MS))
+////                                        )
+////                                )
+////                );
+//
+//        applicationEventPublisher.publishEvent(new MailSendEvent(userPasswordChangeMail));
         return true;
     }
 

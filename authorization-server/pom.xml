@@ -20,8 +20,18 @@
         <commons-io.version>2.11.0</commons-io.version>
         <guava.version>31.1-jre</guava.version>
         <spring-cloud.version>2021.0.1</spring-cloud.version>
+        <spring-mail-module.version>0.0.1</spring-mail-module.version>
     </properties>
-
+        <repositories>
+            <repository>
+                <id>https://github.com/alirezaalj/spring-mail-module</id>
+                <url>https://raw.githubusercontent.com/alirezaalj/spring-mail-module/master/target/mvn-artifact/</url>
+                <snapshots>
+                    <enabled>true</enabled>
+                    <updatePolicy>always</updatePolicy>
+                </snapshots>
+            </repository>
+        </repositories>
     <dependencies>
         <!--        start:web    -->
         <dependency>
@@ -106,6 +116,11 @@
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
         <dependency>
+            <groupId>ir.alirezaalijani</groupId>
+            <artifactId>spring-mail-module</artifactId>
+            <version>${spring-mail-module.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
@@ -150,22 +165,9 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>ir.alirezaalijani</groupId>-->
-<!--            <artifactId>spring-mail-module</artifactId>-->
-<!--            <version>0.0.1</version>-->
-<!--        </dependency>-->
+
     </dependencies>
-<!--    <repositories>-->
-<!--        <repository>-->
-<!--            <id>PROJECT-REPO-URL</id>-->
-<!--            <url>https://raw.githubusercontent.com/alirezaalj/spring-mail-module/master/target/mvn-artifact/</url>-->
-<!--            <snapshots>-->
-<!--                <enabled>true</enabled>-->
-<!--                <updatePolicy>always</updatePolicy>-->
-<!--            </snapshots>-->
-<!--        </repository>-->
-<!--    </repositories>-->
+
     <dependencyManagement>
         <dependencies>
             <dependency>

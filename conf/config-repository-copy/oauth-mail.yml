@@ -1,16 +1,22 @@
 spring.config.activate.on-profile: mail
-spring:
+my-spring:
   mail:
-    host: smtp.gmail.com
+    host: <your smtp host>
     port: 587
-    username: <your_emai_account>
-    password: <your_email_accunt_password>
+    username: <your email username>
+    password: <your email account password>
     properties:
       mail:
         smtp:
           auth: true
-          connectiontimeout: 5000
+          connection-timeout: 5000
           timeout: 5000
-          writetimeout: 5000
+          write-timeout: 5000
           starttls:
-            enable: true
+            enable: false
+    retry:
+      initial-interval-ms: 1000
+      max-interval-ms: 10000
+      multiplier: 2.0
+      maxAttempts: 3
+      sleep-time-ms: 2000

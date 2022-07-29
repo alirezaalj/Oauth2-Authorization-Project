@@ -3,10 +3,10 @@ package ir.alirezaalijani.security.authorization.service.web;
 
 import ir.alirezaalijani.security.authorization.service.config.ApplicationConfigData;
 import ir.alirezaalijani.security.authorization.service.domain.request.ContactRequest;
-import ir.alirezaalijani.security.authorization.service.security.captcha.ICaptchaService;
-import ir.alirezaalijani.security.authorization.service.mail.model.DefaultTemplateMail;
-import ir.alirezaalijani.security.authorization.service.mail.model.MailMessage;
-import ir.alirezaalijani.security.authorization.service.mail.MailService;
+import ir.alirezaalijani.spring.mail.module.mail.MailService;
+import ir.alirezaalijani.spring.mail.module.mail.model.MailMessage;
+import ir.alirezaalijani.spring.mail.module.mail.templates.DefaultMailTemplate;
+import ir.alirezaalijani.spring.mail.module.mail.templates.TemplateType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
@@ -69,17 +69,17 @@ public class HomeController {
                               HttpServletRequest request,
                               Model model) {
         if (bindingResult.hasErrors()) return "contact";
-        MailMessage mailMessage = new DefaultTemplateMail(configData.application_contact_mail,
-                contactRequest.getEmail(),
+        MailMessage mailMessage =  new DefaultMailTemplate(configData.application_contact_mail, contactRequest.getEmail(),
                 contactRequest.getSubject(),
                 contactMessage.replace("{email}", contactRequest.getEmail())
                         .replace("{name}", contactRequest.getName())
                         .concat(contactRequest.getMessage()),
-                "",
-                "mail/default-mail"
-        );
+                configData.application_host, TemplateType.Blue,
+                "Contact",configData.application_host,
+                "Web site","Authorization Server Application",
+                configData.application_host);
         log.info("New contact request is received from {}", contactRequest.getEmail());
-        mailService.publishMail(mailMessage);
+        mailService.sendEmail(mailMessage);
         model.addAttribute("message", "Your message has been sent. Thank you!");
         return "contact";
     }

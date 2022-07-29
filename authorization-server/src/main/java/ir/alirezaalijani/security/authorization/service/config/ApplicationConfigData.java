@@ -9,7 +9,11 @@ public class ApplicationConfigData {
     public String application_name;
     @Value("${application.info.host:http://localhost:9000}")
     public String application_host;
-    @Value("${application.info.contact-email:contact@alirezaalijani.ir.com}")
+    @Value("${my-spring.mail.username:dev@alirezaalijani.ir}")
+    public String application_smtp_mail;
+    @Value("${application.info.service-email:service@alirezaalijani.ir}")
+    public String application_service_mail;
+    @Value("${application.info.contact-email:contact@alirezaalijani.ir}")
     public String application_contact_mail;
     @Value("${application.security.encryption.token.secret-key:defKey}")
     public String sec_enc_token_key;
@@ -25,5 +29,4 @@ public class ApplicationConfigData {
     public long sec_login_attempt_expire_after_duration;
     @Value("${application.security.login.fall.expire-after.unit:DAYS}")
     public String sec_login_attempt_expire_after_unit;
-
 }

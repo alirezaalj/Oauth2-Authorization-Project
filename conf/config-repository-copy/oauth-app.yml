@@ -3,6 +3,7 @@ application:
   info:
     name: 'Cloud Oauth Service'
     host: http://localhost:9000
+    service-email: dev@alirezaalijani.ir
     contact-email: contact@alirezaalijani.ir
   security:
     key-store:
