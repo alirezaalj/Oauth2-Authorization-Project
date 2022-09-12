@@ -22,16 +22,16 @@
         <spring-cloud.version>2021.0.1</spring-cloud.version>
         <spring-mail-module.version>0.0.1</spring-mail-module.version>
     </properties>
-        <repositories>
-            <repository>
-                <id>https://github.com/alirezaalj/spring-mail-module</id>
-                <url>https://raw.githubusercontent.com/alirezaalj/spring-mail-module/master/target/mvn-artifact/</url>
-                <snapshots>
-                    <enabled>true</enabled>
-                    <updatePolicy>always</updatePolicy>
-                </snapshots>
-            </repository>
-        </repositories>
+    <repositories>
+        <repository>
+            <id>alijani-gitlab-maven</id>
+            <url>https://gitlab.com/api/v4/projects/39316022/packages/maven</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
     <dependencies>
         <!--        start:web    -->
         <dependency>
