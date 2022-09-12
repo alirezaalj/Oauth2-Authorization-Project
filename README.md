@@ -123,7 +123,7 @@ docker-compose --env-file config-dev.env dwon
   ######2- [Allow Less Secure App(should be turned on).](https://myaccount.google.com/lesssecureapps "Allow Less Secure App(should be turned on).")
   add your email info to **conf/config-repository/oauth-mail.yml** file and host info
 ```yml
-spring:
+my-spring:
   mail:
     host: smtp.gmail.com # your smtp host
     port: 587 # your smtp host port
